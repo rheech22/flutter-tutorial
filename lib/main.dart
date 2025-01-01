@@ -92,50 +92,65 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    return Scaffold(body: LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth < 450) {
-        return Column(
-          children: [
-            Expanded(child: mainArea),
-            SafeArea(
-                child: BottomNavigationBar(
-              items: [
-                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.favorite), label: 'Favorites'),
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 450) {
+            return Column(
+              children: [
+                Expanded(child: mainArea),
+                SafeArea(
+                  child: BottomNavigationBar(
+                    items: [
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.home),
+                        label: 'Home',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.favorite),
+                        label: 'Favorites',
+                      ),
+                    ],
+                    currentIndex: selectedIndex,
+                    onTap: (value) {
+                      setState(() {
+                        selectedIndex = value;
+                      });
+                    },
+                  ),
+                ),
               ],
-              currentIndex: selectedIndex,
-              onTap: (value) {
-                setState(() {
-                  selectedIndex = value;
-                });
-              },
-            )),
-          ],
-        );
-      }
-      return Row(
-        children: [
-          SafeArea(
-              child: NavigationRail(
-            extended: constraints.maxWidth >= 600,
-            destinations: [
-              NavigationRailDestination(
-                  icon: Icon(Icons.home), label: Text('Home')),
-              NavigationRailDestination(
-                  icon: Icon(Icons.favorite), label: Text('Favorites')),
+            );
+          }
+          return Row(
+            children: [
+              SafeArea(
+                child: NavigationRail(
+                  extended: constraints.maxWidth >= 600,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text('Home'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.favorite),
+                      label: Text('Favorites'),
+                    ),
+                  ],
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (value) {
+                    setState(() {
+                      selectedIndex = value;
+                    });
+                  },
+                ),
+              ),
+              Expanded(child: mainArea),
             ],
-            selectedIndex: selectedIndex,
-            onDestinationSelected: (value) {
-              setState(() {
-                selectedIndex = value;
-              });
-            },
-          )),
-          Expanded(child: mainArea),
-        ],
-      );
-    }));
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -172,10 +187,11 @@ class GeneratorPage extends StatelessWidget {
                   label: Text('Like'),
                 ),
                 ElevatedButton(
-                    onPressed: () {
-                      appState.getNext();
-                    },
-                    child: Text('Next')),
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text('Next'),
+                ),
               ],
             ),
             Spacer(flex: 2),
@@ -207,21 +223,22 @@ class BigCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: AnimatedSize(
-            duration: Duration(milliseconds: 200),
-            child: MergeSemantics(
-              child: Wrap(
-                children: [
-                  Text(
-                    pair.first,
-                    style: style.copyWith(fontWeight: FontWeight.w200),
-                  ),
-                  Text(
-                    pair.second,
-                    style: style.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            )),
+          duration: Duration(milliseconds: 200),
+          child: MergeSemantics(
+            child: Wrap(
+              children: [
+                Text(
+                  pair.first,
+                  style: style.copyWith(fontWeight: FontWeight.w200),
+                ),
+                Text(
+                  pair.second,
+                  style: style.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -248,11 +265,14 @@ class FavoritesPage extends StatelessWidget {
           child: Text('You have ${favorites.length} favorites'),
         ),
         Expanded(
-            child: GridView(
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 400, childAspectRatio: 400 / 80),
-          children: [
-            ...favorites.map((pair) => ListTile(
+          child: GridView(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 400,
+              childAspectRatio: 400 / 80,
+            ),
+            children: [
+              ...favorites.map(
+                (pair) => ListTile(
                   leading: IconButton(
                     icon: Icon(Icons.delete_outline, semanticLabel: 'Delete'),
                     color: theme.colorScheme.primary,
@@ -262,9 +282,11 @@ class FavoritesPage extends StatelessWidget {
                   ),
                   title:
                       Text(pair.asLowerCase, semanticsLabel: pair.asPascalCase),
-                ))
-          ],
-        ))
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -303,19 +325,20 @@ class _HistoryListViewState extends State<HistoryListView> {
         itemBuilder: (context, index, animation) {
           final pair = appState.history[index];
           return SizeTransition(
-              sizeFactor: animation,
-              child: Center(
-                child: TextButton.icon(
-                  onPressed: () {
-                    appState.toggleFavorite(pair);
-                  },
-                  icon: appState.favorites.contains(pair)
-                      ? Icon(Icons.favorite, size: 12)
-                      : SizedBox(),
-                  label:
-                      Text(pair.asLowerCase, semanticsLabel: pair.asPascalCase),
-                ),
-              ));
+            sizeFactor: animation,
+            child: Center(
+              child: TextButton.icon(
+                onPressed: () {
+                  appState.toggleFavorite(pair);
+                },
+                icon: appState.favorites.contains(pair)
+                    ? Icon(Icons.favorite, size: 12)
+                    : SizedBox(),
+                label:
+                    Text(pair.asLowerCase, semanticsLabel: pair.asPascalCase),
+              ),
+            ),
+          );
         },
       ),
     );
